@@ -19,26 +19,26 @@
   - AOS (Animation on Scroll – nếu cần hiệu ứng cuộn)
   - 
 ## cấu trúc dự án
+```
 gis-company-website/
-├── index.html              # Trang chủ
-├── about.html              # Giới thiệu
-├── services.html           # Dịch vụ
-├── products.html           # Sản phẩm
-├── news.html               # Tin tức
-├── contact.html            # Liên hệ
+├── index.html # Trang chủ
+├── about.html # Giới thiệu
+├── services.html # Dịch vụ
+├── products.html # Sản phẩm
+├── news.html # Tin tức
+├── contact.html # Liên hệ
 ├── style/
-│   └── main.css            # CSS chính
+│ └── main.css # CSS chính
 ├── js/
-│   └── main.js             # JavaScript chính
+│ └── main.js # JavaScript chính
 ├── assets/
-│   ├── images/             # Thư mục chứa ảnh minh họa, logo, banner...
-│   ├── fonts/              # (Tùy chọn) Font chữ nếu có font riêng
-│   └── icons/              # (Tùy chọn) SVG hoặc icon tuỳ chỉnh
-├── libs/                   # (Tùy chọn) Các thư viện bên ngoài như SwiperJS, AOS
-├── README.md               # Mô tả dự án
-└── .gitignore              # Danh sách file/folder không đẩy lên GitHub
-
-
+│ ├── images/ # Thư mục chứa ảnh minh họa, logo, banner...
+│ ├── fonts/ # (Tùy chọn) Font chữ nếu có font riêng
+│ └── icons/ # (Tùy chọn) SVG hoặc icon tuỳ chỉnh
+├── libs/ # (Tùy chọn) Các thư viện bên ngoài như SwiperJS, AOS
+├── README.md # Mô tả dự án
+└── .gitignore # Danh sách file/folder không đẩy lên GitHub
+```
 
 ## Tính năng chính
 
