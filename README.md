@@ -1,63 +1,88 @@
-# Website Giới Thiệu Công Ty Công Nghệ GIS
+# Định hướng nghiên cứu & phát triển: Tìm kiếm ngữ nghĩa HNSW cho hệ thống quản lý kho
 
-Đây là dự án xây dựng một website giới thiệu công ty hoạt động trong lĩnh vực công nghệ GIS (Geographic Information System), được lấy cảm hứng từ giao diện và bố cục của trang ekgis.com.vn.
+## 1. Mục tiêu nổi bật
+- Tăng độ chính xác và tốc độ tìm kiếm vật tư trong kho lớn bằng công nghệ semantic search.
+- Hiểu ý định tìm kiếm, gợi ý sản phẩm tương đồng về nghĩa, không phụ thuộc từ khóa cứng.
+- Tích hợp HNSW (Hierarchical Navigable Small World) để tăng tốc truy vấn vector.
 
-## Mục tiêu dự án
+## 2. Sơ đồ kiến trúc tổng thể
 
-- Tạo một website hiện đại, responsive, dễ sử dụng.
-- Trình bày rõ ràng các dịch vụ, sản phẩm, tin tức và thông tin liên hệ.
-- Dễ dàng mở rộng thành hệ thống CMS hoặc tích hợp backend sau này.
-
-## Công nghệ sử dụng
-
-- HTML5
-- CSS3 (có thể mở rộng bằng Tailwind CSS hoặc Bootstrap)
-- JavaScript thuần
-- FontAwesome cho biểu tượng (tùy chọn)
-- Thư viện hỗ trợ:
-  - SwiperJS (nếu có slider)
-  - AOS (Animation on Scroll – nếu cần hiệu ứng cuộn)
-  - 
-## cấu trúc dự án
-```
-gis-company-website/
-├── index.html # Trang chủ
-├── about.html # Giới thiệu
-├── services.html # Dịch vụ
-├── products.html # Sản phẩm
-├── news.html # Tin tức
-├── contact.html # Liên hệ
-├── style/
-│ └── main.css # CSS chính
-├── js/
-│ └── main.js # JavaScript chính
-├── assets/
-│ ├── images/ # Thư mục chứa ảnh minh họa, logo, banner...
-│ ├── fonts/ # (Tùy chọn) Font chữ nếu có font riêng
-│ └── icons/ # (Tùy chọn) SVG hoặc icon tuỳ chỉnh
-├── libs/ # (Tùy chọn) Các thư viện bên ngoài như SwiperJS, AOS
-├── README.md # Mô tả dự án
-└── .gitignore # Danh sách file/folder không đẩy lên GitHub
+```mermaid
+flowchart TD
+  A[Người dùng] -->|Truy vấn tự nhiên| B(Giao diện React UI)
+  B -->|Gửi truy vấn| C(API tìm kiếm ngữ nghĩa)
+  C -->|Sinh embedding| D(Embedding Model\nMiniLM/PhoBERT)
+  D -->|Vector truy vấn| E(Vector DB\nWeaviate HNSW)
+  E -->|Top-k kết quả| C
+  C -->|Trả kết quả| B
+  B -->|Hiển thị| A
+  subgraph Data Pipeline
+    F[SQL/CSV/ERP] --> G(Tiền xử lý & Embedding)
+    G --> H(Vector hóa & Index HNSW)
+    H --> E
+  end
+  style E fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+  style D fill:#fffde7,stroke:#fbc02d,stroke-width:2px
+  style B fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+  style C fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
+  style G fill:#ffe0b2,stroke:#f57c00,stroke-width:2px
+  style H fill:#b3e5fc,stroke:#0288d1,stroke-width:2px
+  style F fill:#f5f5f5,stroke:#616161,stroke-width:1px
 ```
 
-## Tính năng chính
+## 3. Công nghệ & phương pháp
+- **Embedding semantic:** Sentence Transformers (all-MiniLM-L6-v2), PhoBERT, FastText/Word2Vec.
+- **Vector DB & Index:** Weaviate (HNSW), có thể mở rộng Milvus, Elasticsearch vector plugin.
+- **Backend:** Python (Flask, FastAPI) hoặc .NET, tích hợp API tìm kiếm ngữ nghĩa.
+- **Frontend:** React UI hiện tại, hỗ trợ tìm kiếm tự nhiên, xem tất cả vật tư, lọc nâng cao.
 
-- Giao diện thân thiện với người dùng, tối ưu cho desktop và thiết bị di động.
-- Điều hướng đơn giản, rõ ràng.
-- Mỗi dịch vụ và sản phẩm được trình bày dưới dạng khối rõ ràng, dễ tiếp cận.
-- Dễ dàng mở rộng thêm phần tìm kiếm, chatbot, hoặc tích hợp API.
+## 4. Quy trình triển khai chi tiết
+### Bước 1: Thu thập & chuẩn hóa dữ liệu
+- Trích xuất mô tả, metadata sản phẩm từ SQL/ERP/CSV.
+- Làm sạch, chuẩn hóa, loại bỏ ký tự lạ, chuẩn UTF-8.
 
-## Hướng dẫn sử dụng
+### Bước 2: Tiền xử lý & sinh embedding
+- Gom các trường mô tả thành một chuỗi tổng hợp.
+- Tokenize tiếng Việt (PyVi, underthesea).
+- Sử dụng mô hình embedding (MiniLM, PhoBERT, v.v.) để chuyển thành vector.
 
-1. Clone repository:
-   ```bash
-   git clone https://github.com/anhdingu/web-check.git
-2. Mở file index.html bằng trình duyệt hoặc sử dụng extension Live Server nếu dùng VS Code.
-3. Tùy chỉnh nội dung và hình ảnh theo nhu cầu của công ty.
+### Bước 3: Xây dựng index HNSW
+- Đưa vector và metadata vào Weaviate (hoặc Milvus) với chỉ mục HNSW.
+- Kiểm tra khả năng truy vấn top-k nhanh.
 
-## Ghi chú
+### Bước 4: Thiết kế API tìm kiếm ngữ nghĩa
+- Xây dựng API nhận truy vấn tiếng Việt, sinh embedding cho truy vấn.
+- Truy vấn vector DB để lấy top-k vật tư gần nhất.
+- Trả về metadata vật tư cho UI.
 
-Đây là bản tĩnh (static site). Nếu cần quản trị nội dung (CMS) hoặc tích hợp backend, có thể chuyển sang sử dụng một framework như React, Next.js hoặc tích hợp với hệ thống WordPress, Strapi.
+### Bước 5: Giao diện demo/tích hợp
+- Giao diện React: nhập truy vấn, xem kết quả, lọc/sắp xếp, xem chi tiết vật tư.
+- Có thể tích hợp vào hệ thống kho thực tế hoặc làm demo độc lập.
 
-Dự án hiện chưa có backend hoặc cơ sở dữ liệu.
+## 5. Lợi ích kỳ vọng
+- Tăng tỷ lệ tìm đúng sản phẩm ≥ 90%.
+- Tốc độ truy vấn trung bình ≤ 100ms.
+- Tăng tỷ lệ click vào kết quả ≥ 30%.
+- Mở rộng tích hợp vào e-commerce, CRM, logistics.
 
+## 6. Định hướng mở rộng
+- **Tìm kiếm đa ngôn ngữ** (multilingual search).
+- **Gợi ý thông minh** dựa trên hành vi người dùng.
+- **Phân tích ý định, cảm xúc** bằng AI.
+- **Đo lường & dashboard:** Thêm module đo tốc độ, tỷ lệ tìm đúng, tỷ lệ click.
+
+## 7. Đánh giá thành công
+- Đo tốc độ truy vấn thực tế trên UI.
+- Đo tỷ lệ tìm đúng qua bộ test truy vấn mẫu.
+- Theo dõi tỷ lệ click và phản hồi người dùng.
+
+---
+**Liên kết codebase:**
+- `src/App.tsx`: UI tìm kiếm ngữ nghĩa, xem tất cả vật tư.
+- `src/components/MaterialList.tsx`: Bảng vật tư, lọc/sắp xếp.
+- `src/services/weaviateService.ts`: Kết nối Weaviate, truy vấn HNSW.
+- `public/materials_sample.json`: Dữ liệu mẫu.
+
+**Ghi chú:**
+- Có thể mở rộng thêm các module AI, dashboard đo lường, hoặc tích hợp với hệ thống lớn hơn.
+- Đề xuất thử nghiệm nhiều mô hình embedding để tối ưu kết quả tìm kiếm. 
