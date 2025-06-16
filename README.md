@@ -7,28 +7,42 @@
 
 ## 2. Sơ đồ kiến trúc tổng thể
 
-```mermaid
-flowchart TD
-  A[Người dùng] -->|Truy vấn tự nhiên| B(Giao diện React UI)
-  B -->|Gửi truy vấn| C(API tìm kiếm ngữ nghĩa)
-  C -->|Sinh embedding| D(Embedding Model\nMiniLM/PhoBERT)
-  D -->|Vector truy vấn| E(Vector DB\nWeaviate HNSW)
-  E -->|Top-k kết quả| C
-  C -->|Trả kết quả| B
-  B -->|Hiển thị| A
-  subgraph Data Pipeline
-    F[SQL/CSV/ERP] --> G(Tiền xử lý & Embedding)
-    G --> H(Vector hóa & Index HNSW)
-    H --> E
-  end
-  style E fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-  style D fill:#fffde7,stroke:#fbc02d,stroke-width:2px
-  style B fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-  style C fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
-  style G fill:#ffe0b2,stroke:#f57c00,stroke-width:2px
-  style H fill:#b3e5fc,stroke:#0288d1,stroke-width:2px
-  style F fill:#f5f5f5,stroke:#616161,stroke-width:1px
-```
+graph TD
+    A["Người dùng"] --> B["React Frontend<br/>Port 3001"]
+    B --> C{"Switch AI<br/>Ngữ nghĩa"}
+    
+    C -->|"Bật AI"| D["Python Backend<br/>Port 5000"]
+    C -->|"Tắt AI"| E["Mock Service<br/>JavaScript"]
+    
+    D --> F["Sentence Transformers<br/>paraphrase-multilingual-MiniLM-L12-v2"]
+    D --> G["PyVi + Underthesea<br/>Vietnamese NLP"]
+    D --> H["FAISS Vector DB<br/>Cosine Similarity"]
+    
+    F --> I["Text → Vector<br/>384 dimensions"]
+    G --> J["Tokenization<br/>Stop Words<br/>Synonyms"]
+    H --> K["Fast Vector Search<br/>Top-K Results"]
+    
+    I --> L["Semantic Search API"]
+    J --> L
+    K --> L
+    
+    L --> M["JSON Response<br/>+ Similarity Scores"]
+    M --> B
+    
+    E --> N["Basic String Matching<br/>Vietnamese Synonyms"]
+    N --> O["Mock Results"]
+    O --> B
+    
+    B --> P["Search UI<br/>Results Table<br/>Filters<br/>Material Details"]
+    
+    style A fill:#e1f5fe
+    style B fill:#e8f5e8
+    style D fill:#fff3e0
+    style F fill:#fce4ec
+    style G fill:#fce4ec
+    style H fill:#fce4ec
+    style L fill:#f3e5f5
+    style P fill:#e8f5e8
 
 ## 3. Công nghệ & phương pháp
 - **Embedding semantic:** Sentence Transformers (all-MiniLM-L6-v2), PhoBERT, FastText/Word2Vec.
