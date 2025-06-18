@@ -60,7 +60,28 @@ graph TD
     style L fill:#f3e5f5
     style P fill:#e8f5e8
 ```
-
+```mermaid
+graph TD
+    A["🖥️ USER INTERFACE<br/>React + TypeScript + MUI"] --> B["🌐 API GATEWAY/PROXY<br/>Flask/FastAPI"]
+    
+    B --> C["🤖 NLP/AI SERVICE<br/>Python<br/>• Vietnamese Embedding<br/>• Text Preprocessing<br/>• Semantic Analysis"]
+    
+    B --> D["🔍 VECTOR SEARCH ENGINE<br/>• HNSW Algorithm<br/>• Similarity Computation<br/>• Fast Retrieval"]
+    
+    B --> E["⚙️ BUSINESS LOGIC SERVICE<br/>• User Management<br/>• Authentication<br/>• Business Rules"]
+    
+    C --> F["💾 DATA PERSISTENCE<br/>PostgreSQL + Vector Store<br/>• Structured Data<br/>• Vector Embeddings<br/>• Real-time Sync"]
+    
+    D --> F
+    E --> F
+    
+    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    style B fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
+    style C fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style D fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style E fill:#fce4ec,stroke:#880e4f,stroke-width:3px
+    style F fill:#f1f8e9,stroke:#33691e,stroke-width:3px
+```
 ## 3. Công nghệ & phương pháp
 - **Embedding semantic:** Sentence Transformers (all-MiniLM-L6-v2), PhoBERT, FastText/Word2Vec.
 - **Vector DB & Index:** Weaviate (HNSW), có thể mở rộng Milvus, Elasticsearch vector plugin.
